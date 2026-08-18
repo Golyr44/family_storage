@@ -1,4 +1,4 @@
-name: Build iOS
+name: Build iOS (unsigned)
 
 on: [push]
 
@@ -13,10 +13,10 @@ jobs:
       - name: Get packages
         run: flutter pub get
         working-directory: family_storage
-      - name: Build IPA
+      - name: Build unsigned IPA
         run: flutter build ipa --release --no-codesign
         working-directory: family_storage
       - uses: actions/upload-artifact@v4
         with:
-          name: IPA
+          name: IPA-unsigned
           path: family_storage/build/ios/ipa/*.ipa
