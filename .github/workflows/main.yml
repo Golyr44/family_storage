@@ -11,12 +11,22 @@ jobs:
         with:
           flutter-version: '3.47.0'
       - name: Get packages
-        run: flutter pub get
-        working-directory: family_storage
-      - name: Build unsigned IPA
-        run: flutter build ipa --release --no-codesign
-        working-directory: family_storage
+        run: |
+          cd family_storage
+          flutter pub get
+      - name: Build unsigned .app
+        run: |
+          cd family_storage
+          flutter build ios --release --no-codesign
+      - name: Package .app into .ipa
+        run: |
+          cd family_storage/build/ios
+          mkdir Payload
+          cp -r Release-iphoneos/Runner.app Payload/
+          zip -r ipa.zip Payload/
+          mkdir -p ../ipa
+          mv ipa.zip ../ipa/
       - uses: actions/upload-artifact@v4
         with:
           name: IPA-unsigned
-          path: family_storage/build/ios/ipa/*.ipa
+          path: family_storage/build/ios/ipa/ipa.zip
