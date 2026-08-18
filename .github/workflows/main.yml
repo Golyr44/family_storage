@@ -9,19 +9,25 @@ jobs:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.47.0'
+          flutter-version: 'stable'
+      - name: Disable code signing for Release
+        run: |
+          cd family_storage
+          echo "CODE_SIGNING_REQUIRED=NO" >> ios/Flutter/Release.xcconfig
+          echo "CODE_SIGN_IDENTITY=" >> ios/Flutter/Release.xcconfig
+          echo "CODE_SIGN_ENTITLEMENTS=" >> ios/Flutter/Release.xcconfig
       - name: Get packages
         run: |
           cd family_storage
           flutter pub get
-      - name: Build unsigned .app
+      - name: Build .app (unsigned)
         run: |
           cd family_storage
           flutter build ios --release --no-codesign
       - name: Package .app into .ipa
         run: |
           cd family_storage/build/ios
-          mkdir Payload
+          mkdir -p Payload
           cp -r Release-iphoneos/Runner.app Payload/
           zip -r ipa.zip Payload/
           mkdir -p ../ipa
