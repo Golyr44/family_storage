@@ -1,4 +1,4 @@
-name: Build iOS (unsigned - final)
+name: Build iOS (unsigned)
 
 on: [push]
 
@@ -11,12 +11,16 @@ jobs:
         with:
           flutter-version: '3.47.0'
 
-      - name: Patch project.pbxproj (disable code signing)
+      - name: Remove code signing from project.pbxproj
         run: |
           cd family_storage/ios/Runner.xcodeproj
-          # Скачиваем шаблон без подписи и заменяем
-          curl -o project.pbxproj https://raw.githubusercontent.com/flutter/flutter/master/packages/flutter_tools/templates/app/ios.tmpl/Runner.xcodeproj/project.pbxproj
-          echo "✅ project.pbxproj заменён на шаблон без подписи"
+          # Делаем резервную копию
+          cp project.pbxproj project.pbxproj.bak
+          # Удаляем строки с подписью
+          sed -i '' '/CODE_SIGN/d' project.pbxproj
+          sed -i '' '/DEVELOPMENT_TEAM/d' project.pbxproj
+          sed -i '' '/PROVISIONING_PROFILE/d' project.pbxproj
+          echo "✅ Подпись удалена"
 
       - name: Get packages
         run: |
